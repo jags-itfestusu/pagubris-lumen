@@ -1,24 +1,66 @@
-# Lumen PHP Framework
+# Pagubris API
 
-[![Build Status](https://travis-ci.org/laravel/lumen-framework.svg)](https://travis-ci.org/laravel/lumen-framework)
-[![Total Downloads](https://img.shields.io/packagist/dt/laravel/framework)](https://packagist.org/packages/laravel/lumen-framework)
-[![Latest Stable Version](https://img.shields.io/packagist/v/laravel/framework)](https://packagist.org/packages/laravel/lumen-framework)
-[![License](https://img.shields.io/packagist/l/laravel/framework)](https://packagist.org/packages/laravel/lumen-framework)
+# API Documentation
 
-Laravel Lumen is a stunningly fast PHP micro-framework for building web applications with expressive, elegant syntax. We believe development must be an enjoyable, creative experience to be truly fulfilling. Lumen attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as routing, database abstraction, queueing, and caching.
+-   ## Register User
 
-## Official Documentation
+    Create new user account.
 
-Documentation for the framework can be found on the [Lumen website](https://lumen.laravel.com/docs).
+    -   **URL**
 
-## Contributing
+        https://api.pagubris.my.id/v1/auth/register
 
-Thank you for considering contributing to Lumen! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+    -   **Method**
 
-## Security Vulnerabilities
+        `POST`
 
-If you discover a security vulnerability within Lumen, please send an e-mail to Taylor Otwell at taylor@laravel.com. All security vulnerabilities will be promptly addressed.
+    -   **Data Params**
 
-## License
+        | Field                 | Type   | Required | Explanation                                            |
+        | --------------------- | ------ | -------- | ------------------------------------------------------ |
+        | email                 | string | Yes      | Email (unique)                                         |
+        | username              | string | Yes      | Username (unique)                                      |
+        | first_name            | string | Yes      | First name                                             |
+        | last_name             | string | Yes      | Last Name                                              |
+        | gender                | string | Yes      | Gender. Choose one: <br> `MALE` \| `FEMALE` \| `OTHER` |
+        | password              | string | Yes      | New Password                                           |
+        | password_confirmation | string | Yes      | New password confirmation                              |
 
-The Lumen framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+    -   **Success Response**
+
+        -   **Code:** 200
+
+            **Content**:
+
+            <pre>
+            {
+                "access_token": "<i>access_token</i>",
+                "token_type": "Bearer",
+                "expires_in": <i>token_expires_in_seconds</i>,
+                "user": {
+                    "username": "<i>username</i>",
+                    "name": "<i>full_name</i>",
+                    "avatar": "<i>avatar_link_or_null</i>"
+                }
+            }
+            </pre>
+
+    -   **Error Response**
+
+        -   **Validation Error**
+
+            **Code:** 422
+
+            **Content**:
+
+            <pre>
+            {
+                "[error_field]": "[<i>error_info</i>]",
+            }
+            </pre>
+
+# License
+
+---
+
+Website Pagubris adalah perangkat lunak sumber terbuka di bawah [Lisensi MIT](https://opensource.org/licenses/MIT).

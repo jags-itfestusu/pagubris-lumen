@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Ramsey\Uuid\Uuid;
 
 class AuthController extends Controller
 {
@@ -37,12 +40,51 @@ class AuthController extends Controller
         return response($this->getUser());
     }
 
+    public function register(Request $request)
+    {
+        $this->validate($request, [
+            'email' => 'required|email|unique:users',
+            'username' => 'required|string|unique:users',
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
+            'gender' => 'in:MALE,FEMALE,OTHER',
+            'password' => 'required|string|confirmed'
+        ]);
+
+        $inputs = $request->only([
+            'email',
+            'username',
+            'first_name',
+            'last_name',
+            'gender',
+            'password',
+        ]);
+
+        $user = new User();
+        $user->id = Uuid::uuid6()->toString();
+        $user->fill($inputs);
+        $user->password = Hash::make($inputs['password']);
+        $user->avatar = null;
+        $user->save();
+
+        $credentials = [
+            'email' => $user->email,
+            'password' => $inputs['password'],
+        ];
+
+        if (!$token = auth()->setTTL(1440)->attempt($credentials))
+            throw new AuthenticationException();
+
+        return $this->respondAccess($token);
+    }
+
     private function getUser()
     {
         $user = auth()->user();
         return [
-            'email' => $user->email,
-            'name' => $user->name,
+            'username' => $user->username,
+            'name' => $user->first_name . " " . $user->last_name,
+            'avatar' => $user->avatar,
         ];
     }
 
@@ -52,6 +94,7 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'Bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
+            'user' => $this->getUser(),
         ]);
     }
 }
