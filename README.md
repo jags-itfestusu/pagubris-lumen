@@ -2,6 +2,8 @@
 
 # API Documentation
 
+## Authentication
+
 -   ## Register User
 
     Create new user account.
@@ -49,6 +51,8 @@
 
         -   **Validation Error**
 
+            This error happen when the fields is not completed.
+
             **Code:** 422
 
             **Content**:
@@ -56,6 +60,74 @@
             <pre>
             {
                 "[error_field]": "[<i>error_info</i>]",
+            }
+            </pre>
+
+-   ## Login
+
+    Login.
+
+    -   **URL**
+
+        https://api.pagubris.my.id/v1/auth/login
+
+    -   **Method**
+
+        `POST`
+
+    -   **Data Params**
+
+        | Field    | Type   | Required | Explanation |
+        | -------- | ------ | -------- | ----------- |
+        | email    | string | Yes      | Email       |
+        | password | string | Yes      | Password    |
+
+    -   **Success Response**
+
+        -   **Code:** 200
+
+            **Content**:
+
+            <pre>
+            {
+                "access_token": "<i>access_token</i>",
+                "token_type": "Bearer",
+                "expires_in": <i>token_expires_in_seconds</i>,
+                "user": {
+                    "username": "<i>username</i>",
+                    "name": "<i>full_name</i>",
+                    "avatar": "<i>avatar_link_or_null</i>"
+                }
+            }
+            </pre>
+
+    -   **Error Response**
+
+        -   **Validation Error**
+
+            This error happen when the fields is not completed.
+
+            **Code:** 422
+
+            **Content**:
+
+            <pre>
+            {
+                "[error_field]": "[<i>error_info</i>]",
+            }
+            </pre>
+
+        -   **Authentication Error**
+
+            Credential error.
+
+            **Code:** 401
+
+            **Content**:
+
+            <pre>
+            {
+                "error": "Unauthenticated",
             }
             </pre>
 
