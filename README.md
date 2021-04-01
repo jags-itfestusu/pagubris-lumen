@@ -184,6 +184,100 @@
             }
             </pre>
 
+-   ## Get Authenticated User
+
+    Get information of authenticated user.
+
+    -   **URL**
+
+        https://api.pagubris.my.id/v1/auth/me
+
+    -   **Method**
+
+        `GET`
+
+    -   **Headers**
+
+        | Field         | Type   | Required | Explanation           |
+        | ------------- | ------ | -------- | --------------------- |
+        | Authorization | string | Yes      | Bearer <_your_token_> |
+
+    -   **Success Response**
+
+        -   **Code:** 200
+
+            **Content**:
+
+            <pre>
+            {
+                "username": "<i>username</i>",
+                "name": "<i>full_name</i>",
+                "avatar": "<i>avatar_link_or_null</i>"
+            }
+            </pre>
+
+    -   **Error Response**
+
+        -   **Authentication Error**
+
+            Credential error.
+
+            **Code:** 401
+
+            **Content**:
+
+            <pre>
+            {
+                "error": "Unauthenticated",
+            }
+            </pre>
+
+-   ## Logout
+
+    Logging out authenticated user and invalidate the token.
+
+    -   **URL**
+
+        https://api.pagubris.my.id/v1/auth/logout
+
+    -   **Method**
+
+        `POST`
+
+    -   **Headers**
+
+        | Field         | Type   | Required | Explanation           |
+        | ------------- | ------ | -------- | --------------------- |
+        | Authorization | string | Yes      | Bearer <_your_token_> |
+
+    -   **Success Response**
+
+        -   **Code:** 200
+
+            **Content**:
+
+            <pre>
+            {
+                "message": "Logged out"
+            }
+            </pre>
+
+    -   **Error Response**
+
+        -   **Authentication Error**
+
+            Credential error.
+
+            **Code:** 401
+
+            **Content**:
+
+            <pre>
+            {
+                "error": "Unauthenticated",
+            }
+            </pre>
+
 # License
 
 ---
