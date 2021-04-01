@@ -131,6 +131,59 @@
             }
             </pre>
 
+-   ## Refresh Token
+
+    Get new token and invalidate old token.
+
+    -   **URL**
+
+        https://api.pagubris.my.id/v1/auth/refresh
+
+    -   **Method**
+
+        `POST`
+
+    -   **Headers**
+
+        | Field         | Type   | Required | Explanation           |
+        | ------------- | ------ | -------- | --------------------- |
+        | Authorization | string | Yes      | Bearer <_your_token_> |
+
+    -   **Success Response**
+
+        -   **Code:** 200
+
+            **Content**:
+
+            <pre>
+            {
+                "access_token": "<i>access_token</i>",
+                "token_type": "Bearer",
+                "expires_in": <i>token_expires_in_seconds</i>,
+                "user": {
+                    "username": "<i>username</i>",
+                    "name": "<i>full_name</i>",
+                    "avatar": "<i>avatar_link_or_null</i>"
+                }
+            }
+            </pre>
+
+    -   **Error Response**
+
+        -   **Authentication Error**
+
+            Credential error.
+
+            **Code:** 401
+
+            **Content**:
+
+            <pre>
+            {
+                "error": "Unauthenticated",
+            }
+            </pre>
+
 # License
 
 ---
