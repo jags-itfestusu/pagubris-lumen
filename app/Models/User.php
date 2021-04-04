@@ -14,6 +14,8 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 {
     use Authenticatable, Authorizable, HasFactory;
 
+    public $incrementing = false;
+
     /**
      * The attributes that are mass assignable.
      *
