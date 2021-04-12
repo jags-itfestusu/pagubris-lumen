@@ -45,8 +45,7 @@ class AuthController extends Controller
         $this->validate($request, [
             'email' => 'required|email|unique:users',
             'username' => 'required|string|unique:users',
-            'first_name' => 'required|string',
-            'last_name' => 'required|string',
+            'name' => 'required|string',
             'gender' => 'in:MALE,FEMALE,OTHER',
             'password' => 'required|string|confirmed'
         ]);
@@ -54,8 +53,7 @@ class AuthController extends Controller
         $inputs = $request->only([
             'email',
             'username',
-            'first_name',
-            'last_name',
+            'name',
             'gender',
             'password',
         ]);
@@ -65,6 +63,7 @@ class AuthController extends Controller
         $user->fill($inputs);
         $user->password = Hash::make($inputs['password']);
         $user->avatar = null;
+        $user->bio = "";
         $user->save();
 
         $credentials = [
@@ -83,7 +82,7 @@ class AuthController extends Controller
         $user = auth()->user();
         return [
             'username' => $user->username,
-            'name' => $user->first_name . " " . $user->last_name,
+            'name' => $user->name,
             'avatar' => $user->avatar,
         ];
     }
