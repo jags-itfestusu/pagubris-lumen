@@ -37,6 +37,7 @@ $router->group(['prefix' => 'v1'], function () use ($router) {
 
         $router->group(['prefix' => 'profile'], function () use ($router) {
             $router->get("/", "ProfileController@index");
+            $router->put("/", "ProfileController@update");
         });
     });
 });
