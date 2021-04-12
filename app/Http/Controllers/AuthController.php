@@ -18,7 +18,7 @@ class AuthController extends Controller
         ]);
 
         $credentials = $request->only(['email', 'password']);
-        if (!$token = auth()->setTTL(1440)->attempt($credentials))
+        if (!$token = auth()->setTTL(259200)->attempt($credentials))
             throw new AuthenticationException();
 
         return $this->respondAccess($token);
@@ -71,7 +71,7 @@ class AuthController extends Controller
             'password' => $inputs['password'],
         ];
 
-        if (!$token = auth()->setTTL(1440)->attempt($credentials))
+        if (!$token = auth()->setTTL(259200)->attempt($credentials))
             throw new AuthenticationException();
 
         return $this->respondAccess($token);
