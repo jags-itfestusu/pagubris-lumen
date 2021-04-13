@@ -20,6 +20,18 @@ class FeedController extends Controller
         return response()->json($feeds, 200, [], JSON_NUMERIC_CHECK);
     }
 
+    public function indexAnswer($id)
+    {
+        $feed = Feed::with(['answers' => function ($query) {
+            return $query->withCount('answers')->with(['answers' => function ($query) {
+                return $query->latest()->take(3);
+            }]);
+        }])
+            ->findOrFail($id);
+
+        return $feed->answers;
+    }
+
     public function get(Request $request, $id)
     {
         $feed = Feed::with(['answers' => function ($query) {
