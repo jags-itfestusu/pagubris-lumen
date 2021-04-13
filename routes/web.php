@@ -34,6 +34,7 @@ $router->group(['prefix' => 'v1'], function () use ($router) {
             $router->get("/", "FeedController@index");
             $router->post("/", "FeedController@store");
             $router->get("{id}", "FeedController@get");
+            $router->post("{id}/answers", "FeedController@storeAnswer");
         });
 
         $router->group(['prefix' => 'profile'], function () use ($router) {

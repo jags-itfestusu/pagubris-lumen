@@ -16,4 +16,14 @@ class Feed extends Model
     protected $fillable = [
         'content'
     ];
+
+    public function answers()
+    {
+        return $this->hasMany(Feed::class, 'parent_feed_id', 'id');
+    }
+
+    public function answersCount()
+    {
+        return $this->hasMany(Feed::class, 'parent_feed_id', 'id')->count();
+    }
 }
