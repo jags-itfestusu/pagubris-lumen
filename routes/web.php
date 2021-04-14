@@ -30,6 +30,8 @@ $router->group(['prefix' => 'v1'], function () use ($router) {
     });
 
     $router->group(['middleware' => 'auth'], function () use ($router) {
+        $router->get('categories', 'CategoryController@index');
+
         $router->group(['prefix' => 'feeds'], function () use ($router) {
             $router->get("/", "FeedController@index");
             $router->post("/", "FeedController@store");
