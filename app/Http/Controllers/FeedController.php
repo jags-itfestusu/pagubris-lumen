@@ -11,6 +11,7 @@ class FeedController extends Controller
     public function index(Request $request)
     {
         $feeds = Feed::where('parent_feed_id', null)
+            ->with('category')
             ->with(array('creator' => function ($query) {
                 $query->select('id', 'name', 'avatar');
             }))->withCount('answers')->latest()->get();
@@ -25,16 +26,19 @@ class FeedController extends Controller
     public function indexAnswer($id)
     {
         $feed = Feed::with(['answers' => function ($query) {
-            return $query->with(array('creator' => function ($query) {
-                $query->select('id', 'name', 'avatar');
-            }))->withCount('answers');
+            return $query
+                ->with('category')
+                ->with(array('creator' => function ($query) {
+                    $query->select('id', 'name', 'avatar');
+                }))->withCount('answers');
         }])->findOrFail($id);
 
         $answers = $feed->answers;
         foreach ($answers as $answer) {
-            $answer->answers = $answer->answers()->with(array('creator' => function ($query) {
-                $query->select('id', 'name', 'avatar');
-            }))->latest()->take(3)->get();
+            $answer->answers = $answer->answers()
+                ->with(array('creator' => function ($query) {
+                    $query->select('id', 'name', 'avatar');
+                }))->latest()->take(3)->get();
         }
         return $answers;
     }
@@ -76,6 +80,7 @@ class FeedController extends Controller
         }
         $feed = $this->save($request, $feed);
         $feed->creator = $feed->creator()->select(['id', 'name', 'avatar'])->first();
+        $feed->category = $feed->category;
         return response($feed, 201);
     }
 
@@ -88,7 +93,7 @@ class FeedController extends Controller
 
     public function update(Request $request, $id)
     {
-        $feed = Feed::findOrFail($id);
+        $feed = Feed::with('category')->findOrFail($id);
         if ($feed->owner_id !== auth()->user()->id) {
             return response()->json([
                 'error' => 'Forbidden',
