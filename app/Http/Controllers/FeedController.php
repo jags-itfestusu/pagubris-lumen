@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Feed;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Ramsey\Uuid\Uuid;
 
 class FeedController extends Controller
@@ -126,5 +127,10 @@ class FeedController extends Controller
         $feed->fill($request->all());
         $feed->save();
         return $feed;
+    }
+
+    public function storeImage(Request $request)
+    {
+        return Storage::disk('public')->put('', $request->file('image'));
     }
 }

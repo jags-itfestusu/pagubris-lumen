@@ -35,7 +35,7 @@ $router->group(['prefix' => 'v1'], function () use ($router) {
         $router->group(['prefix' => 'feeds'], function () use ($router) {
             $router->get("/", "FeedController@index");
             $router->post("/", "FeedController@store");
-            // $router->post("image", "FeedController@storeImage");
+            $router->post("image", "FeedController@storeImage");
             $router->get("{id}", "FeedController@get");
             $router->put("{id}", "FeedController@update");
             $router->delete("{id}", "FeedController@destroy");
