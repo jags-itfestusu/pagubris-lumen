@@ -55,13 +55,15 @@ class FeedController extends Controller
     public function store(Request $request, $id = null)
     {
         $this->validate($request, [
-            'content' => 'required|string'
+            'content' => 'required|string',
+            'category_id' => 'required|string',
         ]);
 
         $feed = new Feed();
         $feed->id = Uuid::uuid6()->toString();
         $feed->owner_id = auth()->user()->id;
         $feed->parent_feed_id = $id;
+        $feed->category_id = $request->category_id;
         $feed = $this->save($request, $feed);
         $feed->creator = $feed->creator()->select(['id', 'name', 'avatar'])->first();
         return response($feed, 201);
@@ -84,7 +86,7 @@ class FeedController extends Controller
             ], 403);
         }
         $this->validate($request, [
-            'content' => 'required|string'
+            'content' => 'required|string',
         ]);
         $feed = $this->save($request, $feed);
         $feed->creator = $feed->creator()->select(['id', 'name', 'avatar'])->first();
@@ -106,9 +108,7 @@ class FeedController extends Controller
 
     private function save(Request $request, Feed $feed)
     {
-        $feed->fill($request->only([
-            'content'
-        ]));
+        $feed->fill($request->all());
         $feed->save();
         return $feed;
     }

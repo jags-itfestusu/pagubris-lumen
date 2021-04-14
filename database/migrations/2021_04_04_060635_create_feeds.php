@@ -18,6 +18,8 @@ class CreateFeeds extends Migration
             $table->text('content');
             $table->string('owner_id', 100);
             $table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade');
+            $table->string('category_id', 100);
+            $table->foreign('category_id')->references('id')->on('categories');
             $table->string('parent_feed_id', 100)->nullable();
             $table->foreign('parent_feed_id')->references('id')->on('feeds')->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();

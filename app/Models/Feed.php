@@ -14,7 +14,7 @@ class Feed extends Model
     }
 
     protected $fillable = [
-        'content'
+        'content',
     ];
 
     public function answers()
