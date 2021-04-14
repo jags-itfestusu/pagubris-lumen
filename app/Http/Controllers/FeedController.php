@@ -52,18 +52,28 @@ class FeedController extends Controller
         return response()->json($feed, 200, [], JSON_NUMERIC_CHECK);
     }
 
-    public function store(Request $request, $id = null)
+    public function store(Request $request, $parentFeed = null)
     {
         $this->validate($request, [
             'content' => 'required|string',
-            'category_id' => 'required|string',
         ]);
+
+        if ($parentFeed == null) {
+            $this->validate($request, [
+                'category_id' => 'required|string',
+            ]);
+        }
 
         $feed = new Feed();
         $feed->id = Uuid::uuid6()->toString();
         $feed->owner_id = auth()->user()->id;
-        $feed->parent_feed_id = $id;
-        $feed->category_id = $request->category_id;
+        if ($parentFeed == null) {
+            $feed->category_id = $request->category_id;
+            $feed->parent_feed_id = null;
+        } else {
+            $feed->category_id = $parentFeed->category_id;
+            $feed->parent_feed_id = $parentFeed->id;
+        }
         $feed = $this->save($request, $feed);
         $feed->creator = $feed->creator()->select(['id', 'name', 'avatar'])->first();
         return response($feed, 201);
@@ -71,9 +81,9 @@ class FeedController extends Controller
 
     public function storeAnswer(Request $request, $id)
     {
-        Feed::findOrFail($id);
+        $parentFeed = Feed::findOrFail($id);
 
-        return $this->store($request, $id);
+        return $this->store($request, $parentFeed);
     }
 
     public function update(Request $request, $id)
