@@ -46,4 +46,14 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     {
         return [];
     }
+
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'following_users', 'following_id', 'self_id');
+    }
+
+    public function following()
+    {
+        return $this->belongsToMany(User::class, 'following_users', 'self_id', 'following_id');
+    }
 }

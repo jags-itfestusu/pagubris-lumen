@@ -50,6 +50,9 @@ $router->group(['prefix' => 'v1'], function () use ($router) {
 
         $router->group(['prefix' => 'users'], function () use ($router) {
             $router->get("/", "UserController@index");
+            $router->get("{id}", "UserController@get");
+            $router->post("{id}/follow", "UserController@follow");
+            $router->post("{id}/unfollow", "UserController@unfollow");
         });
 
         $router->get('highlight', 'HighlightController@index');
