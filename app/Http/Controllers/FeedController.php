@@ -23,7 +23,7 @@ class FeedController extends Controller
         foreach ($feeds as $feed) {
             $feed->answers = $feed->answers()->withCount('answers')->with(array('creator' => function ($query) {
                 $query->select('id', 'name', 'avatar');
-            }))->latest()->take(3)->get();
+            }))->with('images')->latest()->take(3)->get();
         }
         return response()->json($feeds, 200, [], JSON_NUMERIC_CHECK);
     }
@@ -44,7 +44,7 @@ class FeedController extends Controller
             $answer->answers = $answer->answers()
                 ->with(array('creator' => function ($query) {
                     $query->select('id', 'name', 'avatar');
-                }))->latest()->take(3)->get();
+                }))->with('images')->latest()->take(3)->get();
         }
         return $answers;
     }
@@ -147,12 +147,22 @@ class FeedController extends Controller
 
     public function destroy($id)
     {
-        $feed = Feed::findOrFail($id);
+        $feed = Feed::with('images')->findOrFail($id);
         if ($feed->owner_id !== auth()->user()->id) {
             return response()->json([
                 'error' => 'Forbidden',
                 'message' => "You can't delete other user feed."
             ], 403);
+        }
+        foreach ($feed->images as $image) {
+            Storage::disk('public')->delete($image->filepath);
+            $image->delete();
+        }
+        foreach ($feed->answers as $answer) {
+            foreach ($answer->images as $image) {
+                Storage::disk('public')->delete($image->filepath);
+                $image->delete();
+            }
         }
         $feed->delete();
         return response(null, 204);
