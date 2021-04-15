@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Feed;
+use App\Models\MediaTemp;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Ramsey\Uuid\Uuid;
@@ -131,6 +133,18 @@ class FeedController extends Controller
 
     public function storeImage(Request $request)
     {
-        return Storage::disk('public')->put('', $request->file('image'));
+        $filepath = Storage::disk('public')->put('feeds', $request->file('image'));
+        $media = new MediaTemp();
+        $media->id = Uuid::uuid4()->toString();
+        $media->filepath = $filepath;
+        $media->expired = Carbon::now()->addHour();
+        $media->owner_id = auth()->user()->id;
+        $media->disposition = 'FEED';
+        $media->save();
+        return response()->json([
+            'id' => $media->id,
+            'disposition' => $media->disposition,
+            'expired' => $media->expired,
+        ]);
     }
 }
