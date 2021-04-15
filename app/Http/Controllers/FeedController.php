@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Feed;
+use App\Models\MediaFeedResource;
 use App\Models\MediaTemp;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -15,6 +16,7 @@ class FeedController extends Controller
     {
         $feeds = Feed::where('parent_feed_id', null)
             ->with('category')
+            ->with('images')
             ->with(array('creator' => function ($query) {
                 $query->select('id', 'name', 'avatar');
             }))->withCount('answers')->latest()->get();
@@ -31,6 +33,7 @@ class FeedController extends Controller
         $feed = Feed::with(['answers' => function ($query) {
             return $query
                 ->with('category')
+                ->with('images')
                 ->with(array('creator' => function ($query) {
                     $query->select('id', 'name', 'avatar');
                 }))->withCount('answers');
@@ -52,6 +55,7 @@ class FeedController extends Controller
             return $query->with('answers')->withCount('answers');
         }])
             ->withCount('answers')
+            ->with('images')
             ->with(array('creator' => function ($query) {
                 $query->select('id', 'name', 'avatar');
             }))
@@ -63,6 +67,7 @@ class FeedController extends Controller
     {
         $this->validate($request, [
             'content' => 'required|string',
+            'images' => 'array',
         ]);
 
         if ($parentFeed == null) {
@@ -81,9 +86,37 @@ class FeedController extends Controller
             $feed->category_id = $parentFeed->category_id;
             $feed->parent_feed_id = $parentFeed->id;
         }
+
         $feed = $this->save($request, $feed);
+
+        if ($request->has('images')) {
+            foreach ($request->images as $imageId) {
+                $mediaTemp = MediaTemp::findOrFail($imageId);
+                if ($mediaTemp->owner_id != auth()->user()->id) {
+                    $feed->delete();
+                    return response()->json([
+                        'message' => "Media $imageId not owned by you"
+                    ], 422, [], JSON_NUMERIC_CHECK);
+                } else if ($mediaTemp->disposition !== 'FEED') {
+                    $feed->delete();
+                    return response()->json([
+                        'message' => "Media $imageId purpose is not feed usage"
+                    ], 422, [], JSON_NUMERIC_CHECK);
+                } else {
+                    $media = new MediaFeedResource();
+                    $media->id = Uuid::uuid4()->toString();
+                    $media->filepath = $mediaTemp->filepath;
+                    $media->feed_id = $feed->id;
+                    $media->url = env('APP_URL') . '/data/' . $mediaTemp->filepath;
+                    $media->save();
+                    $mediaTemp->delete();
+                }
+            }
+        }
+
         $feed->creator = $feed->creator()->select(['id', 'name', 'avatar'])->first();
         $feed->category = $feed->category;
+        $feed->images = $feed->images;
         return response($feed, 201);
     }
 
@@ -108,6 +141,7 @@ class FeedController extends Controller
         ]);
         $feed = $this->save($request, $feed);
         $feed->creator = $feed->creator()->select(['id', 'name', 'avatar'])->first();
+        $feed->images = $feed->images;
         return response()->json($feed, 200, [], JSON_NUMERIC_CHECK);
     }
 
