@@ -48,6 +48,10 @@ $router->group(['prefix' => 'v1'], function () use ($router) {
             $router->put("/", "ProfileController@update");
         });
 
+        $router->group(['prefix' => 'users'], function () use ($router) {
+            $router->get("/", "UserController@index");
+        });
+
         $router->get('highlight', 'HighlightController@index');
     });
 });
